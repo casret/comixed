@@ -1,8 +1,9 @@
 import {Component, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
 
-import {Comic} from '../comic';
+import {Comic} from '../comic.model';
 import {ComicService} from '../comic.service';
+import {ComicListEntryComponent} from '../comic-list-entry/comic-list-entry.component';
 
 @Component({
   selector: 'app-comic-list',
