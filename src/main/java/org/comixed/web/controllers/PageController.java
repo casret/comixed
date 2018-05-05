@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.comixed.library.model.Comic;
 import org.comixed.library.model.Page;
+import org.comixed.repositories.PageRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,15 +34,16 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/comics/{id}")
 public class PageController
 {
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private ComicController comicRepository;
+    @Autowired
+    private PageRepository pageRepository;
 
-    @RequestMapping(value = "/pages",
+    @RequestMapping(value = "/comics/{id}/pages",
                     method = RequestMethod.GET)
     @CrossOrigin
     public List<Page> getAll(@PathVariable("id") long id)
@@ -51,7 +53,54 @@ public class PageController
         return this.getPagesForComic(id);
     }
 
-    @RequestMapping(value = "/pages/{index}",
+    @RequestMapping(value = "/pages/duplicates/count",
+                    method = RequestMethod.GET)
+    @CrossOrigin
+    public long getDuplicateCount()
+    {
+        this.logger.debug("Get the number of duplicate pages");
+
+        return this.pageRepository.getDuplicatePageCount();
+    }
+
+    @RequestMapping(value = "/pages/duplicates",
+                    method = RequestMethod.GET)
+    @CrossOrigin
+    public List<Page> getDuplicatePages()
+    {
+        this.logger.debug("Getting the list of duplicate pages");
+
+        List<Page> result = this.pageRepository.getDuplicatePageList();
+
+        this.logger.debug("Returning {} duplicate pages", result.size());
+
+        return result;
+    }
+
+    @RequestMapping(value = "/comics/{id}/pages/{index}/content",
+                    method = RequestMethod.GET)
+    @CrossOrigin
+    public byte[] getImage(@PathVariable("id") long id, @PathVariable("index") int index)
+    {
+        this.logger.debug("Getting the image for comic: id={} index={}", id, index);
+
+        Comic comic = this.comicRepository.getComic(id);
+
+        if ((comic != null) && (index < comic.getPageCount())) return comic.getPage(index).getContent();
+
+        if (comic == null)
+        {
+            this.logger.debug("No such comic: id={}", id);
+        }
+        else
+        {
+            this.logger.debug("No such page: index={} page count={}", index, comic.getPageCount());
+        }
+
+        return null;
+    }
+
+    @RequestMapping(value = "/comics/{id}/pages/{index}",
                     method = RequestMethod.GET)
     @CrossOrigin
     public Page getPage(@PathVariable("id") long id, @PathVariable("index") int index)
@@ -61,6 +110,27 @@ public class PageController
         List<Page> pages = this.getPagesForComic(id);
 
         return (pages == null) || (index >= pages.size()) ? null : pages.get(index);
+    }
+
+    @RequestMapping(value = "/pages/{id}/content",
+                    method = RequestMethod.GET)
+    @CrossOrigin
+    public byte[] getPageContent(@PathVariable("id") long id)
+    {
+        this.logger.debug("Getting page: id={}", id);
+
+        Page page = this.pageRepository.findOne(id);
+
+        if (page == null)
+        {
+            this.logger.debug("No such page: id={}", id);
+            return null;
+        }
+        else
+        {
+            this.logger.debug("Returning {} bytes", page.getContent().length);
+            return page.getContent();
+        }
     }
 
     private List<Page> getPagesForComic(long id)
@@ -73,28 +143,5 @@ public class PageController
             return null;
         }
         else return comic.getPages();
-    }
-
-    @RequestMapping(value = "/pages/{index}/content",
-                    method = RequestMethod.GET)
-    @CrossOrigin
-    public byte[] getImage(@PathVariable("id") long id, @PathVariable("index") int index)
-    {
-        this.logger.debug("Getting the image for comic: id={} index={}", id, index);
-
-        Comic comic = comicRepository.getComic(id);
-
-        if (comic != null && index < comic.getPageCount()) { return comic.getPage(index).getContent(); }
-
-        if (comic == null)
-        {
-            logger.debug("No such comic: id={}", id);
-        }
-        else
-        {
-            logger.debug("No such page: index={} page count={}", index, comic.getPageCount());
-        }
-
-        return null;
     }
 }
