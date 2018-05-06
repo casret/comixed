@@ -6,10 +6,10 @@ import {ComicService} from '../comic.service';
 
 @Component({
   selector: 'app-import-comics',
-  templateUrl: './import-comics.component.html',
-  styleUrls: ['./import-comics.component.css']
+  templateUrl: './import-comic-list.component.html',
+  styleUrls: ['./import-comic-list.component.css']
 })
-export class ImportComicsComponent implements OnInit {
+export class ImportComicListComponent implements OnInit {
 
   directoryForm: FormGroup;
   directory: AbstractControl;
