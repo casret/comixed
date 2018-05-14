@@ -1,3 +1,33 @@
-<div>
-	<app-comic-list-entry *ngFor="let comic of comics" [comic]="comic"></app-comic-list-entry>
+<div id='display_comic_details' class='modal fade' role='dialog'>
+  <div class='modal-dialog modal-lg'>
+    <div class='modal-content'>
+      <div class='modal-header'>
+        <h4 class='modal-title'>{{getTitleTextFor(current_comic)}}</h4>
+      </div>
+      <div class='modal-body'>
+        <div class='media'>
+          <div class='media-left media-center'>
+            <img src='{{getImageURL(current_comic)}}'
+              class='img-thumbnail' width='256'>
+          </div>
+          <div class='media-body'>
+            <h5 class='media-heading'>{{current_comic.title}}</h5>
+            <p class='text-important small'>{{current_comic.summary}}</p>
+            <span class='text-muted'><strong>Pages:</strong>
+              {{current_comic.page_count}}</span><br /> <span
+              *ngIf='current_comic.cover_date !=null' class='text-muted'><strong>Published
+                on</strong> {{current_comic.cover_date|date:'MM/yyyy'}}<br /> </span> <span
+              *ngIf='current_comic.last_read_date != null'
+              class='text-muted'> <strong>Last read on</strong>
+              {{current_comic.last_read_date | date:'MM/dd/yyyy'}}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class='container'>
+  <app-comic-list-entry *ngFor='let comic of comics' [comic]='comic'
+    (onComicSelected)='handleComicClicked($event)'></app-comic-list-entry>
 </div>
