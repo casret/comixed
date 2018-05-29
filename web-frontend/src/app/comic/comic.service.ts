@@ -1,6 +1,6 @@
 import {Injectable, EventEmitter} from '@angular/core';
 
-import {HttpClient, HttpParams} from '@angular/common/http';
+import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
 import {Observable} from 'rxjs/Observable';
@@ -20,24 +20,47 @@ export class ComicService {
   all_comics_update: EventEmitter<Comic[]> = new EventEmitter();
   private last_comic_date: string;
   private fetching_comics: boolean = false;
+  private authenticated: boolean = false;
 
   constructor(private http: HttpClient, private errorsService: ErrorsService) {
+    this.monitorAuthentication();
+    this.monitorComicList();
+  }
+
+  monitorAuthentication(): void {
     setInterval(() => {
-      if (this.fetching_comics) {
+      const headers = new HttpHeaders();
+      this.http.get(`${this.api_url}/user`, {headers: headers}).subscribe(
+        response => {
+          console.log('Authentication check response:', response);
+          if (response && response['name']) {
+            this.authenticated = true;
+          } else {
+            this.authenticated = false;
+          }
+          console.log("Are we authenticated now? " + (this.authenticated ? 'Yes' : 'No'));
+        },
+        error => {
+          console.log('ERROR: ' + error.message);
+          this.authenticated = false;
+        });
+    }, 250);
+  }
+
+  monitorComicList(): void {
+    setInterval(() => {
+      if (!this.authenticated || this.fetching_comics) {
         return;
       } else {
         this.fetching_comics = true;
         let params = new HttpParams();
         if (this.last_comic_date) {
-          console.log('Using after date:', this.last_comic_date);
           params = new HttpParams().set('after', this.last_comic_date);
-          console.log('params:', params.toString());
         }
 
         this.http.get(`${this.api_url}/comics`, {params: params, responseType: 'json'})
           .subscribe((comics: Comic[]) => {
             if (comics.length !== 0) {
-              console.log('Retrieved ' + comics.length + ' new comics');
               this.all_comics = this.all_comics.concat(comics);
               this.all_comics.forEach((comic: Comic) => {
                 if (this.last_comic_date == null || comic.added_date > this.last_comic_date) {
@@ -124,5 +147,32 @@ export class ComicService {
 
   getComicDownloadLink(comicId: number): string {
     return `${this.api_url}/comics/${comicId}/download`;
+  }
+
+  isAuthenticated(): boolean {
+    return this.authenticated;
+  }
+
+  login(username: string, password: string, callback) {
+    const headers = new HttpHeaders({authorization: 'Basic ' + btoa(username + ':' + password)});
+    this.http.get(`${this.api_url}/user`, {headers: headers}).subscribe(
+      response => {
+        if (response && response['name']) {
+          this.authenticated = true;
+        } else {
+          this.authenticated = false;
+        }
+
+        callback && callback();
+      },
+      error => {
+        console.log('ERROR: ' + error.message);
+        this.errorsService.fireErrorMessage('Login failure');
+        this.authenticated = false;
+      });
+  }
+
+  logout(): Observable<any> {
+    return this.http.get(`${this.api_url}/logout`);
   }
 }
