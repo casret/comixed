@@ -109,6 +109,7 @@ public class PageController
     }
 
     @RequestMapping(value = "/comics/{id}/pages/{index}/content",
+                    produces = "image/jpeg",
                     method = RequestMethod.GET)
     @CrossOrigin
     public byte[] getImage(@PathVariable("id") long id, @PathVariable("index") int index)
@@ -144,6 +145,7 @@ public class PageController
     }
 
     @RequestMapping(value = "/pages/{id}/content",
+                    produces = "image/jpeg",
                     method = RequestMethod.GET)
     @CrossOrigin
     public ResponseEntity<InputStreamResource> getPageContent(@PathVariable("id") long id)

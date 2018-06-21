@@ -366,7 +366,7 @@ public class Comic
     }
 
     /**
-     * Returns just the filename portion of the comic file's name.
+     * Returns just the filename portion of the comic file's name, without an extension
      *
      * @return the base filename
      */
@@ -374,6 +374,17 @@ public class Comic
     public String getBaseFilename()
     {
         return FilenameUtils.removeExtension(this.filename);
+    }
+
+    /**
+     * Returns just the filename portion of the comic file's name.
+     *
+     * @return the base filename
+     */
+    @JsonIgnore
+    public String getFilenameName()
+    {
+        return FilenameUtils.getName(this.filename);
     }
 
     /**
