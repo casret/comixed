@@ -81,5 +81,13 @@ public class OPDSController
     {
         return new OPDSAcquisitionFeed("/api/opds/all", this.comicRepository.findAll());
     }
+
+    @RequestMapping(value = "/unread",
+                    method = RequestMethod.GET)
+    @CrossOrigin
+    public OPDSFeed unread() throws ParseException
+    {
+        return new OPDSAcquisitionFeed("/api/opds/unread", this.comicRepository.findByLastReadDateIsNullOrderByDateAddedDesc());
+    }
 }
 
