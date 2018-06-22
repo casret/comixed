@@ -81,7 +81,9 @@ public class ComicController
         }
     }
 
-    @RequestMapping(value = {"/{id}/download", "/{id}/download/{filename}"},
+    @RequestMapping(value =
+    {"/{id}/download",
+     "/{id}/download/{filename}"},
                     method = RequestMethod.GET)
     @CrossOrigin
     public ResponseEntity<InputStreamResource> downloadComic(@PathVariable("id") long id) throws FileNotFoundException,

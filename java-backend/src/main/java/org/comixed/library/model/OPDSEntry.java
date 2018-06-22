@@ -1,3 +1,4 @@
+
 package org.comixed.library.model;
 
 import java.net.URLEncoder;
@@ -26,8 +27,8 @@ public class OPDSEntry
     private String content;
     private List<String> authors;
 
-    public OPDSEntry(String title, String content,
-            List<String> authors, List<OPDSLink> links) {
+    public OPDSEntry(String title, String content, List<String> authors, List<OPDSLink> links)
+    {
         this.id = "urn:uuid:" + UUID.randomUUID();
         this.updated = ZonedDateTime.now().withFixedOffsetZone();
 
@@ -37,11 +38,15 @@ public class OPDSEntry
         this.links = links;
     }
 
-    public OPDSEntry(Comic comic) {
+    public OPDSEntry(Comic comic)
+    {
         id = comic.getId().toString();
-        if (comic.getCoverDate() != null) {
+        if (comic.getCoverDate() != null)
+        {
             updated = _convertDate(comic.getCoverDate());
-        } else {
+        }
+        else
+        {
             updated = _convertDate(comic.getDateAdded());
         }
         title = comic.getSeries() + " " + comic.getVolume() + " " + comic.getIssueNumber();
@@ -53,42 +58,49 @@ public class OPDSEntry
         // use to build urls
         String urlPrefix = "/api/comics/" + comic.getId();
         String urlSafeFilename;
-        try {
+        try
+        {
             urlSafeFilename = URLEncoder.encode(comic.getFilenameName(), StandardCharsets.UTF_8.toString());
-        } catch (java.io.UnsupportedEncodingException ex) {
+        }
+        catch (java.io.UnsupportedEncodingException ex)
+        {
             urlSafeFilename = comic.getFilenameName();
         }
 
-        links = Arrays.asList(
-                new OPDSLink("image/jpeg", "http://opds-spec.org/image", urlPrefix + "/pages/0/content"),
-                new OPDSLink("image/jpeg", "http://opds-spec.org/image/thumbnail",  urlPrefix + "/pages/0/content"),
-                new OPDSLink(comic.getArchiveType().getMediaType(), "http://opds-spec.org/acquisition",
-                    urlPrefix + "/download/" + urlSafeFilename)
-                );
+        links = Arrays.asList(new OPDSLink("image/jpeg", "http://opds-spec.org/image", urlPrefix + "/pages/0/content"),
+                              new OPDSLink("image/jpeg", "http://opds-spec.org/image/thumbnail",
+                                           urlPrefix + "/pages/0/content"),
+                              new OPDSLink(comic.getArchiveType().getMediaType(), "http://opds-spec.org/acquisition",
+                                           urlPrefix + "/download/" + urlSafeFilename));
     }
 
-
-    public String getId() {
+    public String getId()
+    {
         return id;
     }
 
-    public String getTitle() {
+    public String getTitle()
+    {
         return title;
     }
 
-    public ZonedDateTime getUpdated() {
+    public ZonedDateTime getUpdated()
+    {
         return updated;
     }
 
-    public List<OPDSLink> getLinks() {
+    public List<OPDSLink> getLinks()
+    {
         return links;
     }
 
-    public String getContent() {
+    public String getContent()
+    {
         return content;
     }
 
-    public List<String> getAuthors() {
+    public List<String> getAuthors()
+    {
         return authors;
     }
 
@@ -96,7 +108,6 @@ public class OPDSEntry
     {
         // Yep, this is a bunch of ugly because Date is actually a java.sql.Date
         return Instant.ofEpochMilli(date.getTime()).atZone(ZoneId.systemDefault()).toLocalDate()
-            .atStartOfDay(ZoneId.systemDefault()).withFixedOffsetZone();
+                      .atStartOfDay(ZoneId.systemDefault()).withFixedOffsetZone();
     }
 }
-

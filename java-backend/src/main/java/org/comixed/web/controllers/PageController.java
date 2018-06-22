@@ -59,7 +59,6 @@ public class PageController
     @Autowired
     private FileTypeIdentifier fileTypeIdentifier;
 
-
     @RequestMapping(value = "/pages/{id}",
                     method = RequestMethod.DELETE)
     @CrossOrigin
@@ -126,10 +125,8 @@ public class PageController
 
         Comic comic = this.comicRepository.getComic(id);
 
-
-        if ((comic != null) && (index < comic.getPageCount())) {
-            return getResponseEntityForPage(comic.getPage(index));
-        }
+        if ((comic != null)
+            && (index < comic.getPageCount())) { return getResponseEntityForPage(comic.getPage(index)); }
 
         if (comic == null)
         {
@@ -209,11 +206,12 @@ public class PageController
         }
     }
 
-    private ResponseEntity<byte[]> getResponseEntityForPage(Page page) {
+    private ResponseEntity<byte[]> getResponseEntityForPage(Page page)
+    {
         byte[] content = page.getContent();
         String type = fileTypeIdentifier.typeFor(content);
         return ResponseEntity.ok().contentLength(content.length)
-            .header("Content-Disposition", "attachment; filename=\"" + page.getFilename() + "\"")
-            .contentType(MediaType.valueOf(type)).body(content);
+                             .header("Content-Disposition", "attachment; filename=\"" + page.getFilename() + "\"")
+                             .contentType(MediaType.valueOf(type)).body(content);
     }
 }

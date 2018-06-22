@@ -61,7 +61,9 @@ import org.comixed.library.model.View;
 import org.comixed.repositories.ComicRepository;
 
 @RestController
-@RequestMapping(value = "/api/opds", produces = { "application/atom+xml" })
+@RequestMapping(value = "/api/opds",
+                produces =
+                {"application/atom+xml"})
 public class OPDSController
 {
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -76,8 +78,8 @@ public class OPDSController
     @CrossOrigin
     public OPDSFeed get() throws ParseException
     {
-        OPDSFeed feed = new OPDSNavigationFeed(
-                this.messageSource.getMessage("opds.start.title", null, Locale.getDefault()));
+        OPDSFeed feed = new OPDSNavigationFeed(this.messageSource.getMessage("opds.start.title", null,
+                                                                             Locale.getDefault()));
 
         return feed;
     }
@@ -88,8 +90,8 @@ public class OPDSController
     public OPDSFeed all() throws ParseException
     {
         return new OPDSAcquisitionFeed("/api/opds/all",
-                this.messageSource.getMessage("opds.all.title", null, Locale.getDefault()),
-                this.comicRepository.findAll());
+                                       this.messageSource.getMessage("opds.all.title", null, Locale.getDefault()),
+                                       this.comicRepository.findAll());
     }
 
     @RequestMapping(value = "/unread",
@@ -98,8 +100,7 @@ public class OPDSController
     public OPDSFeed unread() throws ParseException
     {
         return new OPDSAcquisitionFeed("/api/opds/unread",
-                this.messageSource.getMessage("opds.unread.title", null, Locale.getDefault()),
-                this.comicRepository.findByLastReadDateIsNullOrderByDateAddedDesc());
+                                       this.messageSource.getMessage("opds.unread.title", null, Locale.getDefault()),
+                                       this.comicRepository.findByLastReadDateIsNullOrderByDateAddedDesc());
     }
 }
-

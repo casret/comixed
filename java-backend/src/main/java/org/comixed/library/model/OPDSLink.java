@@ -1,3 +1,4 @@
+
 package org.comixed.library.model;
 
 import java.time.ZonedDateTime;
@@ -15,15 +16,18 @@ public class OPDSLink
     private String rel;
     private String href;
 
-    public String getType() {
+    public String getType()
+    {
         return type;
     }
 
-    public String getRel() {
+    public String getRel()
+    {
         return rel;
     }
 
-    public String getHRef() {
+    public String getHRef()
+    {
         return href;
     }
 }

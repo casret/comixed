@@ -366,7 +366,8 @@ public class Comic
     }
 
     /**
-     * Returns just the filename portion of the comic file's name, without an extension
+     * Returns just the filename portion of the comic file's name, without an
+     * extension
      *
      * @return the base filename
      */

@@ -1,3 +1,4 @@
+
 package org.comixed.utils;
 
 import java.io.IOException;
@@ -20,29 +21,33 @@ import org.comixed.library.model.OPDSEntry;
 import org.comixed.library.model.OPDSFeed;
 import org.comixed.library.model.OPDSLink;
 
+public class OPDSFeedConverter extends AbstractHttpMessageConverter<OPDSFeed>
+{
 
-public class OPDSFeedConverter
-    extends AbstractHttpMessageConverter<OPDSFeed> {
-
-    public OPDSFeedConverter() {
+    public OPDSFeedConverter()
+    {
         super(MediaType.APPLICATION_ATOM_XML);
     }
 
     @Override
-    protected boolean supports(Class<?> clazz) {
+    protected boolean supports(Class<?> clazz)
+    {
         return OPDSFeed.class.isAssignableFrom(clazz);
     }
 
     @Override
-    protected OPDSFeed readInternal(Class<? extends OPDSFeed> clazz, HttpInputMessage inputMessage)
-        throws IOException, HttpMessageNotReadableException {
+    protected OPDSFeed readInternal(Class<? extends OPDSFeed> clazz,
+                                    HttpInputMessage inputMessage) throws IOException, HttpMessageNotReadableException
+    {
         throw new HttpMessageNotReadableException("Serializing to a OPDSFeed not supported yet");
     }
 
     @Override
-    protected void writeInternal(OPDSFeed feed, HttpOutputMessage outputMessage)
-        throws IOException, HttpMessageNotWritableException {
-        try {
+    protected void writeInternal(OPDSFeed feed, HttpOutputMessage outputMessage) throws IOException,
+                                                                                 HttpMessageNotWritableException
+    {
+        try
+        {
             XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
             XMLStreamWriter writer = outputFactory.createXMLStreamWriter(outputMessage.getBody());
             writer.writeStartDocument("utf-8", "1.0");
@@ -64,7 +69,8 @@ public class OPDSFeedConverter
 
             _writeLinks(writer, feed.getLinks());
 
-            for (OPDSEntry entry : feed.getEntries()) {
+            for (OPDSEntry entry : feed.getEntries())
+            {
                 writer.writeStartElement("entry");
 
                 writer.writeStartElement("title");
@@ -85,13 +91,13 @@ public class OPDSFeedConverter
                 writer.writeEndElement();
 
                 writer.writeStartElement("author");
-                for (String author : entry.getAuthors()) {
+                for (String author : entry.getAuthors())
+                {
                     writer.writeStartElement("name");
                     writer.writeCharacters(author);
                     writer.writeEndElement();
                 }
                 writer.writeEndElement();
-
 
                 _writeLinks(writer, entry.getLinks());
 
@@ -100,14 +106,17 @@ public class OPDSFeedConverter
 
             writer.writeEndDocument();
             writer.close();
-        } catch (Exception e) {
+        }
+        catch (Exception e)
+        {
 
         }
     }
 
-    private void _writeLinks(XMLStreamWriter writer, List<OPDSLink> links)
-            throws XMLStreamException {
-        for (OPDSLink link : links) {
+    private void _writeLinks(XMLStreamWriter writer, List<OPDSLink> links) throws XMLStreamException
+    {
+        for (OPDSLink link : links)
+        {
             writer.writeStartElement("link");
             writer.writeAttribute("type", link.getType());
             writer.writeAttribute("rel", link.getRel());

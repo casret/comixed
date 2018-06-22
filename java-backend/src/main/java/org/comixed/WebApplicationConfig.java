@@ -34,7 +34,8 @@ public class WebApplicationConfig extends WebMvcConfigurerAdapter
     }
 
     @Override
-    public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
+    public void extendMessageConverters(List<HttpMessageConverter<?>> converters)
+    {
         converters.add(new OPDSFeedConverter());
     }
 }
