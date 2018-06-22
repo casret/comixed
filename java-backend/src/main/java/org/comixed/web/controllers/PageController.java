@@ -19,17 +19,19 @@
 
 package org.comixed.web.controllers;
 
+import com.fasterxml.jackson.annotation.JsonView;
+
 import java.io.ByteArrayInputStream;
 import java.util.List;
 
-import org.comixed.library.model.Comic;
-import org.comixed.library.model.Page;
-import org.comixed.library.model.View;
-import org.comixed.repositories.PageRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.core.io.InputStreamResource;
+
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -38,7 +40,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.annotation.JsonView;
+import org.comixed.library.model.Comic;
+import org.comixed.library.model.Page;
+import org.comixed.library.model.View;
+import org.comixed.library.utils.FileTypeIdentifier;
+import org.comixed.repositories.PageRepository;
 
 @RestController
 @RequestMapping("/api")
@@ -50,6 +56,9 @@ public class PageController
     private ComicController comicRepository;
     @Autowired
     private PageRepository pageRepository;
+    @Autowired
+    private FileTypeIdentifier fileTypeIdentifier;
+
 
     @RequestMapping(value = "/pages/{id}",
                     method = RequestMethod.DELETE)
@@ -109,16 +118,18 @@ public class PageController
     }
 
     @RequestMapping(value = "/comics/{id}/pages/{index}/content",
-                    produces = "image/jpeg",
                     method = RequestMethod.GET)
     @CrossOrigin
-    public byte[] getImage(@PathVariable("id") long id, @PathVariable("index") int index)
+    public ResponseEntity<byte[]> getImage(@PathVariable("id") long id, @PathVariable("index") int index)
     {
         this.logger.debug("Getting the image for comic: id={} index={}", id, index);
 
         Comic comic = this.comicRepository.getComic(id);
 
-        if ((comic != null) && (index < comic.getPageCount())) return comic.getPage(index).getContent();
+
+        if ((comic != null) && (index < comic.getPageCount())) {
+            return getResponseEntityForPage(comic.getPage(index));
+        }
 
         if (comic == null)
         {
@@ -145,10 +156,9 @@ public class PageController
     }
 
     @RequestMapping(value = "/pages/{id}/content",
-                    produces = "image/jpeg",
                     method = RequestMethod.GET)
     @CrossOrigin
-    public ResponseEntity<InputStreamResource> getPageContent(@PathVariable("id") long id)
+    public ResponseEntity<byte[]> getPageContent(@PathVariable("id") long id)
     {
         this.logger.debug("Getting page: id={}", id);
 
@@ -162,12 +172,7 @@ public class PageController
         else
         {
             this.logger.debug("Returning {} bytes", page.getContent().length);
-
-            byte[] content = page.getContent();
-            InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(content));
-            return ResponseEntity.ok().contentLength(content.length)
-                                 .header("Content-Disposition", "attachment; filename=\"" + page.getFilename() + "\"")
-                                 .contentType(MediaType.parseMediaType("application/x-cbr")).body(resource);
+            return getResponseEntityForPage(page);
         }
     }
 
@@ -202,5 +207,13 @@ public class PageController
             this.pageRepository.save(page);
             this.logger.debug("Page undeleted: id={}", id);
         }
+    }
+
+    private ResponseEntity<byte[]> getResponseEntityForPage(Page page) {
+        byte[] content = page.getContent();
+        String type = fileTypeIdentifier.typeFor(content);
+        return ResponseEntity.ok().contentLength(content.length)
+            .header("Content-Disposition", "attachment; filename=\"" + page.getFilename() + "\"")
+            .contentType(MediaType.valueOf(type)).body(content);
     }
 }

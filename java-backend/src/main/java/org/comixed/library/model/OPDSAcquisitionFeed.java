@@ -25,7 +25,7 @@ public class OPDSAcquisitionFeed implements OPDSFeed {
         this.updated = ZonedDateTime.now().withFixedOffsetZone();
         this.links = Arrays.asList(
                 new OPDSLink("application/atom+xml; profile=opds-catalog; kind=acquisition", "self", selfUrl),
-                new OPDSLink("application/atom+xml; profile=opds-catalog; kind=navigation", "start", "/api/opds?mediaType=atom")
+                new OPDSLink("application/atom+xml; profile=opds-catalog; kind=navigation", "start", "/api/opds")
                 );
     }
 
