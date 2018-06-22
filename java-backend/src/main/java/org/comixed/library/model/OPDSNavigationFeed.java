@@ -4,7 +4,14 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import org.springframework.context.MessageSource;
+import org.springframework.context.MessageSourceAware;
+import org.springframework.stereotype.Component;
 
 public class OPDSNavigationFeed implements OPDSFeed {
     private String id;
@@ -12,10 +19,11 @@ public class OPDSNavigationFeed implements OPDSFeed {
     private ZonedDateTime updated;
     private List<OPDSEntry> entries;
     private List<OPDSLink> links;
+    private MessageSource messageSource;
 
-    public OPDSNavigationFeed() {
+    public OPDSNavigationFeed(String title) {
+        this.title = title;
         this.id = "urn:uuid:" + UUID.randomUUID();
-        this.title = "ComixEd catalog";
         this.updated = ZonedDateTime.now().withFixedOffsetZone();
         this.links = Arrays.asList(
                 new OPDSLink("application/atom+xml; profile=opds-catalog; kind=navigation", "self", "/api/opds"),
@@ -55,4 +63,5 @@ public class OPDSNavigationFeed implements OPDSFeed {
     {
         return this.entries;
     }
+
 }

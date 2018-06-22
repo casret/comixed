@@ -32,12 +32,15 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
+
+import org.springframework.context.MessageSource;
 
 import org.springframework.core.io.InputStreamResource;
 
@@ -66,11 +69,16 @@ public class OPDSController
     @Autowired
     private ComicRepository comicRepository;
 
+    @Autowired
+    private MessageSource messageSource;
+
     @RequestMapping(method = RequestMethod.GET)
     @CrossOrigin
     public OPDSFeed get() throws ParseException
     {
-        OPDSFeed feed = new OPDSNavigationFeed();
+        OPDSFeed feed = new OPDSNavigationFeed(
+                this.messageSource.getMessage("opds.start.title", null, Locale.getDefault()));
+
         return feed;
     }
 
@@ -79,7 +87,9 @@ public class OPDSController
     @CrossOrigin
     public OPDSFeed all() throws ParseException
     {
-        return new OPDSAcquisitionFeed("/api/opds/all", this.comicRepository.findAll());
+        return new OPDSAcquisitionFeed("/api/opds/all",
+                this.messageSource.getMessage("opds.all.title", null, Locale.getDefault()),
+                this.comicRepository.findAll());
     }
 
     @RequestMapping(value = "/unread",
@@ -87,7 +97,9 @@ public class OPDSController
     @CrossOrigin
     public OPDSFeed unread() throws ParseException
     {
-        return new OPDSAcquisitionFeed("/api/opds/unread", this.comicRepository.findByLastReadDateIsNullOrderByDateAddedDesc());
+        return new OPDSAcquisitionFeed("/api/opds/unread",
+                this.messageSource.getMessage("opds.unread.title", null, Locale.getDefault()),
+                this.comicRepository.findByLastReadDateIsNullOrderByDateAddedDesc());
     }
 }
 

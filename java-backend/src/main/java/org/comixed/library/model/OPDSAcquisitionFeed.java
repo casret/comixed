@@ -15,7 +15,7 @@ public class OPDSAcquisitionFeed implements OPDSFeed {
     private List<OPDSEntry> entries;
     private List<OPDSLink> links;
 
-    public OPDSAcquisitionFeed(String selfUrl, Iterable<Comic> comics)
+    public OPDSAcquisitionFeed(String selfUrl, String title, Iterable<Comic> comics)
     {
         this.id = "urn:uuid:" + UUID.randomUUID();
         this.entries = StreamSupport.stream(comics.spliterator(), true)

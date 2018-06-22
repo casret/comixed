@@ -30,16 +30,18 @@ import org.comixed.library.adaptors.ArchiveAdaptor;
  */
 public enum ArchiveType
 {
- CBZ("ZIP Comic"),
- CBR("RAR Comic"),
- CB7("7Z Comic");
+ CBZ("ZIP Comic", "application/vnd.comicbook+zip"),
+ CBR("RAR Comic", "application/vnd.comicbook-rar"),
+ CB7("7Z Comic", "application/octet-stream");
 
     private String name;
+    private String mediaType;
     private ArchiveAdaptor archiveAdaptor;
 
-    private ArchiveType(String name)
+    private ArchiveType(String name, String mediaType)
     {
         this.name = name;
+        this.mediaType = mediaType;
     }
 
     public ArchiveAdaptor getArchiveAdaptor()
@@ -50,6 +52,11 @@ public enum ArchiveType
     public void setArchiveAdaptor(ArchiveAdaptor archiveAdaptor)
     {
         this.archiveAdaptor = archiveAdaptor;
+    }
+
+    public String getMediaType()
+    {
+        return this.mediaType;
     }
 
     @Override

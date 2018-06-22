@@ -11,14 +11,20 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
 public class OPDSEntry
 {
-    public String id;
-    public String title;
-    public ZonedDateTime updated;
-    public List<OPDSLink> links;
-    public String content;
-    public List<String> authors;
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private String id;
+    private String title;
+    private ZonedDateTime updated;
+    private List<OPDSLink> links;
+    private String content;
+    private List<String> authors;
 
     public OPDSEntry(String title, String content,
             List<String> authors, List<OPDSLink> links) {
@@ -56,7 +62,7 @@ public class OPDSEntry
         links = Arrays.asList(
                 new OPDSLink("image/jpeg", "http://opds-spec.org/image", urlPrefix + "/pages/0/content"),
                 new OPDSLink("image/jpeg", "http://opds-spec.org/image/thumbnail",  urlPrefix + "/pages/0/content"),
-                new OPDSLink("application/octet-stream", "http://opds-spec.org/acquisition",
+                new OPDSLink(comic.getArchiveType().getMediaType(), "http://opds-spec.org/acquisition",
                     urlPrefix + "/download/" + urlSafeFilename)
                 );
     }
