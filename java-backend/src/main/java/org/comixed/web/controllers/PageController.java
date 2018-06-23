@@ -19,19 +19,16 @@
 
 package org.comixed.web.controllers;
 
-import com.fasterxml.jackson.annotation.JsonView;
-
-import java.io.ByteArrayInputStream;
 import java.util.List;
 
+import org.comixed.library.model.Comic;
+import org.comixed.library.model.Page;
+import org.comixed.library.model.View;
+import org.comixed.library.utils.FileTypeIdentifier;
+import org.comixed.repositories.PageRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.beans.factory.annotation.Autowired;
-
-import org.springframework.core.io.InputStreamResource;
-
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -40,11 +37,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import org.comixed.library.model.Comic;
-import org.comixed.library.model.Page;
-import org.comixed.library.model.View;
-import org.comixed.library.utils.FileTypeIdentifier;
-import org.comixed.repositories.PageRepository;
+import com.fasterxml.jackson.annotation.JsonView;
 
 @RestController
 @RequestMapping("/api")
@@ -126,7 +119,7 @@ public class PageController
         Comic comic = this.comicRepository.getComic(id);
 
         if ((comic != null)
-            && (index < comic.getPageCount())) { return getResponseEntityForPage(comic.getPage(index)); }
+            && (index < comic.getPageCount())) return this.getResponseEntityForPage(comic.getPage(index));
 
         if (comic == null)
         {
@@ -169,7 +162,7 @@ public class PageController
         else
         {
             this.logger.debug("Returning {} bytes", page.getContent().length);
-            return getResponseEntityForPage(page);
+            return this.getResponseEntityForPage(page);
         }
     }
 
@@ -183,6 +176,15 @@ public class PageController
             return null;
         }
         else return comic.getPages();
+    }
+
+    private ResponseEntity<byte[]> getResponseEntityForPage(Page page)
+    {
+        byte[] content = page.getContent();
+        String type = this.fileTypeIdentifier.typeFor(content);
+        return ResponseEntity.ok().contentLength(content.length)
+                             .header("Content-Disposition", "attachment; filename=\"" + page.getFilename() + "\"")
+                             .contentType(MediaType.valueOf(type)).body(content);
     }
 
     @RequestMapping(value = "/pages/{id}/undelete",
@@ -204,14 +206,5 @@ public class PageController
             this.pageRepository.save(page);
             this.logger.debug("Page undeleted: id={}", id);
         }
-    }
-
-    private ResponseEntity<byte[]> getResponseEntityForPage(Page page)
-    {
-        byte[] content = page.getContent();
-        String type = fileTypeIdentifier.typeFor(content);
-        return ResponseEntity.ok().contentLength(content.length)
-                             .header("Content-Disposition", "attachment; filename=\"" + page.getFilename() + "\"")
-                             .contentType(MediaType.valueOf(type)).body(content);
     }
 }

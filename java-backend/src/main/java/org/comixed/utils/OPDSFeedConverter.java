@@ -2,24 +2,21 @@
 package org.comixed.utils;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.List;
-import java.util.Scanner;
+
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.comixed.library.model.OPDSEntry;
+import org.comixed.library.model.OPDSFeed;
+import org.comixed.library.model.OPDSLink;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.AbstractHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
-
-import org.comixed.library.model.OPDSEntry;
-import org.comixed.library.model.OPDSFeed;
-import org.comixed.library.model.OPDSLink;
 
 public class OPDSFeedConverter extends AbstractHttpMessageConverter<OPDSFeed>
 {
@@ -29,10 +26,16 @@ public class OPDSFeedConverter extends AbstractHttpMessageConverter<OPDSFeed>
         super(MediaType.APPLICATION_ATOM_XML);
     }
 
-    @Override
-    protected boolean supports(Class<?> clazz)
+    private void _writeLinks(XMLStreamWriter writer, List<OPDSLink> links) throws XMLStreamException
     {
-        return OPDSFeed.class.isAssignableFrom(clazz);
+        for (OPDSLink link : links)
+        {
+            writer.writeStartElement("link");
+            writer.writeAttribute("type", link.getType());
+            writer.writeAttribute("rel", link.getRel());
+            writer.writeAttribute("href", link.getHRef());
+            writer.writeEndElement();
+        }
     }
 
     @Override
@@ -40,6 +43,12 @@ public class OPDSFeedConverter extends AbstractHttpMessageConverter<OPDSFeed>
                                     HttpInputMessage inputMessage) throws IOException, HttpMessageNotReadableException
     {
         throw new HttpMessageNotReadableException("Serializing to a OPDSFeed not supported yet");
+    }
+
+    @Override
+    protected boolean supports(Class<?> clazz)
+    {
+        return OPDSFeed.class.isAssignableFrom(clazz);
     }
 
     @Override
@@ -67,7 +76,7 @@ public class OPDSFeedConverter extends AbstractHttpMessageConverter<OPDSFeed>
             writer.writeCharacters(feed.getUpdated().toString());
             writer.writeEndElement();
 
-            _writeLinks(writer, feed.getLinks());
+            this._writeLinks(writer, feed.getLinks());
 
             for (OPDSEntry entry : feed.getEntries())
             {
@@ -99,7 +108,7 @@ public class OPDSFeedConverter extends AbstractHttpMessageConverter<OPDSFeed>
                 }
                 writer.writeEndElement();
 
-                _writeLinks(writer, entry.getLinks());
+                this._writeLinks(writer, entry.getLinks());
 
                 writer.writeEndElement(); // entry
             }
@@ -110,18 +119,6 @@ public class OPDSFeedConverter extends AbstractHttpMessageConverter<OPDSFeed>
         catch (Exception e)
         {
 
-        }
-    }
-
-    private void _writeLinks(XMLStreamWriter writer, List<OPDSLink> links) throws XMLStreamException
-    {
-        for (OPDSLink link : links)
-        {
-            writer.writeStartElement("link");
-            writer.writeAttribute("type", link.getType());
-            writer.writeAttribute("rel", link.getRel());
-            writer.writeAttribute("href", link.getHRef());
-            writer.writeEndElement();
         }
     }
 }

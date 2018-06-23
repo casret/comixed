@@ -2,7 +2,6 @@
 package org.comixed.library.model;
 
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -31,28 +30,33 @@ public class OPDSAcquisitionFeed implements
                                                 "/api/opds"));
     }
 
-    public String getId()
-    {
-        return id;
-    }
-
+    @Override
     public List<OPDSEntry> getEntries()
     {
-        return entries;
+        return this.entries;
     }
 
+    @Override
+    public String getId()
+    {
+        return this.id;
+    }
+
+    @Override
     public List<OPDSLink> getLinks()
     {
-        return links;
+        return this.links;
     }
 
-    public ZonedDateTime getUpdated()
-    {
-        return updated;
-    }
-
+    @Override
     public String getTitle()
     {
-        return title;
+        return this.title;
+    }
+
+    @Override
+    public ZonedDateTime getUpdated()
+    {
+        return this.updated;
     }
 }

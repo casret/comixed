@@ -6,13 +6,13 @@ import java.util.List;
 
 public interface OPDSFeed
 {
+    public List<OPDSEntry> getEntries();
+
     public String getId();
+
+    public List<OPDSLink> getLinks();
 
     public String getTitle();
 
     public ZonedDateTime getUpdated();
-
-    public List<OPDSLink> getLinks();
-
-    public List<OPDSEntry> getEntries();
 }

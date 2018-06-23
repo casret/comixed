@@ -12,10 +12,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.LoggerFactory;
 
 public class OPDSEntry
 {
@@ -27,32 +25,21 @@ public class OPDSEntry
     private String content;
     private List<String> authors;
 
-    public OPDSEntry(String title, String content, List<String> authors, List<OPDSLink> links)
-    {
-        this.id = "urn:uuid:" + UUID.randomUUID();
-        this.updated = ZonedDateTime.now().withFixedOffsetZone();
-
-        this.title = title;
-        this.content = content;
-        this.authors = authors;
-        this.links = links;
-    }
-
     public OPDSEntry(Comic comic)
     {
-        id = comic.getId().toString();
+        this.id = comic.getId().toString();
         if (comic.getCoverDate() != null)
         {
-            updated = _convertDate(comic.getCoverDate());
+            this.updated = this._convertDate(comic.getCoverDate());
         }
         else
         {
-            updated = _convertDate(comic.getDateAdded());
+            this.updated = this._convertDate(comic.getDateAdded());
         }
-        title = comic.getSeries() + " " + comic.getVolume() + " " + comic.getIssueNumber();
-        content = comic.getTitle() + " " + comic.getSummary();
+        this.title = comic.getSeries() + " " + comic.getVolume() + " " + comic.getIssueNumber();
+        this.content = comic.getTitle() + " " + comic.getSummary();
         // TODO: we should add authors to comics
-        authors = new ArrayList<String>();
+        this.authors = new ArrayList<>();
 
         // FIXME: Is there some sort of router interface we can
         // use to build urls
@@ -67,41 +54,24 @@ public class OPDSEntry
             urlSafeFilename = comic.getFilenameName();
         }
 
-        links = Arrays.asList(new OPDSLink("image/jpeg", "http://opds-spec.org/image", urlPrefix + "/pages/0/content"),
-                              new OPDSLink("image/jpeg", "http://opds-spec.org/image/thumbnail",
-                                           urlPrefix + "/pages/0/content"),
-                              new OPDSLink(comic.getArchiveType().getMediaType(), "http://opds-spec.org/acquisition",
-                                           urlPrefix + "/download/" + urlSafeFilename));
+        this.links = Arrays.asList(new OPDSLink("image/jpeg", "http://opds-spec.org/image",
+                                                urlPrefix + "/pages/0/content"),
+                                   new OPDSLink("image/jpeg", "http://opds-spec.org/image/thumbnail",
+                                                urlPrefix + "/pages/0/content"),
+                                   new OPDSLink(comic.getArchiveType().getMediaType(),
+                                                "http://opds-spec.org/acquisition",
+                                                urlPrefix + "/download/" + urlSafeFilename));
     }
 
-    public String getId()
+    public OPDSEntry(String title, String content, List<String> authors, List<OPDSLink> links)
     {
-        return id;
-    }
+        this.id = "urn:uuid:" + UUID.randomUUID();
+        this.updated = ZonedDateTime.now().withFixedOffsetZone();
 
-    public String getTitle()
-    {
-        return title;
-    }
-
-    public ZonedDateTime getUpdated()
-    {
-        return updated;
-    }
-
-    public List<OPDSLink> getLinks()
-    {
-        return links;
-    }
-
-    public String getContent()
-    {
-        return content;
-    }
-
-    public List<String> getAuthors()
-    {
-        return authors;
+        this.title = title;
+        this.content = content;
+        this.authors = authors;
+        this.links = links;
     }
 
     private ZonedDateTime _convertDate(Date date)
@@ -109,5 +79,35 @@ public class OPDSEntry
         // Yep, this is a bunch of ugly because Date is actually a java.sql.Date
         return Instant.ofEpochMilli(date.getTime()).atZone(ZoneId.systemDefault()).toLocalDate()
                       .atStartOfDay(ZoneId.systemDefault()).withFixedOffsetZone();
+    }
+
+    public List<String> getAuthors()
+    {
+        return this.authors;
+    }
+
+    public String getContent()
+    {
+        return this.content;
+    }
+
+    public String getId()
+    {
+        return this.id;
+    }
+
+    public List<OPDSLink> getLinks()
+    {
+        return this.links;
+    }
+
+    public String getTitle()
+    {
+        return this.title;
+    }
+
+    public ZonedDateTime getUpdated()
+    {
+        return this.updated;
     }
 }

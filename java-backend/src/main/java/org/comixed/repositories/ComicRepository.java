@@ -32,15 +32,6 @@ public interface ComicRepository extends
                                                 Long>
 {
     /**
-     * Finds a comic based on filename.
-     *
-     * @param filename
-     *            the filename
-     * @return the comic
-     */
-    Comic findByFilename(String filename);
-
-    /**
      * Finds all comics added after the specified date
      *
      * @param after
@@ -48,6 +39,15 @@ public interface ComicRepository extends
      * @return the list of comics
      */
     List<Comic> findByDateAddedGreaterThan(Date after);
+
+    /**
+     * Finds a comic based on filename.
+     *
+     * @param filename
+     *            the filename
+     * @return the comic
+     */
+    Comic findByFilename(String filename);
 
     /**
      * Finds all unread comics

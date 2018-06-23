@@ -2,17 +2,9 @@
 package org.comixed.library.model;
 
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 import java.util.UUID;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
-import org.springframework.context.MessageSource;
-import org.springframework.context.MessageSourceAware;
-import org.springframework.stereotype.Component;
 
 public class OPDSNavigationFeed implements
                                 OPDSFeed
@@ -22,7 +14,6 @@ public class OPDSNavigationFeed implements
     private ZonedDateTime updated;
     private List<OPDSEntry> entries;
     private List<OPDSLink> links;
-    private MessageSource messageSource;
 
     public OPDSNavigationFeed(String title)
     {
@@ -46,29 +37,34 @@ public class OPDSNavigationFeed implements
 
     }
 
+    @Override
+    public List<OPDSEntry> getEntries()
+    {
+        return this.entries;
+    }
+
+    @Override
     public String getId()
     {
-        return id;
+        return this.id;
     }
 
-    public String getTitle()
-    {
-        return title;
-    }
-
-    public ZonedDateTime getUpdated()
-    {
-        return updated;
-    }
-
+    @Override
     public List<OPDSLink> getLinks()
     {
         return this.links;
     }
 
-    public List<OPDSEntry> getEntries()
+    @Override
+    public String getTitle()
     {
-        return this.entries;
+        return this.title;
+    }
+
+    @Override
+    public ZonedDateTime getUpdated()
+    {
+        return this.updated;
     }
 
 }

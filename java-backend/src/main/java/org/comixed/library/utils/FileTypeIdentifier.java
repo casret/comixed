@@ -48,6 +48,17 @@ public class FileTypeIdentifier
     private Metadata metadata;
 
     /**
+     * Returns the MIME type for the byte array.
+     *
+     * @param input
+     * @return the MIME type
+     */
+    public String typeFor(byte[] input)
+    {
+        return this.tika.detect(input);
+    }
+
+    /**
      * Returns the MIME type for the supplied input stream.
      *
      * @param input
@@ -57,33 +68,22 @@ public class FileTypeIdentifier
      */
     public String typeFor(InputStream input)
     {
-        logger.debug("Attempting to detect mime type for stream");
+        this.logger.debug("Attempting to detect mime type for stream");
         MediaType result = null;
 
         try
         {
             input.mark(Integer.MAX_VALUE);
-            result = tika.getDetector().detect(input, metadata);
+            result = this.tika.getDetector().detect(input, this.metadata);
             input.reset();
         }
         catch (IOException error)
         {
-            logger.error("Error determining filetype from stream", error);
+            this.logger.error("Error determining filetype from stream", error);
         }
 
-        logger.debug("result=" + result);
+        this.logger.debug("result=" + result);
         return result != null ? result.getSubtype() : null;
-    }
-
-    /**
-     * Returns the MIME type for the byte array.
-     *
-     * @param input
-     * @return the MIME type
-     */
-    public String typeFor(byte[] input)
-    {
-        return tika.detect(input);
     }
 
 }

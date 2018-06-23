@@ -24,9 +24,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.Timestamp;
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -129,7 +127,7 @@ public class ComicController
         {
             Date after = new Date(new Timestamp(timestamp.get()).getTime());
             this.logger.debug("Getting comics added after {}", after);
-            result = comicRepository.findByDateAddedGreaterThan(after);
+            result = this.comicRepository.findByDateAddedGreaterThan(after);
         }
         else
         {
